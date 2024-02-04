@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prefect
+    expose:
+      - 5432
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  prefect-server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    restart: unless-stopped
+    volumes:
+      - prefect:/root/.prefect
+      - ./flows:/opt/prefect/flows
+    environment:
+      - PREFECT_UI_URL=http://127.0.0.1:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@database:5432/prefect
+    ports:
+      - "4200:4200"
+
+volumes:
+  prefect:
+  db:
