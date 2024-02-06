@@ -22,6 +22,7 @@ services:
     restart: unless-stopped
     volumes:
       - prefect:/root/.prefect
+      # TODO need a better name for src...
       - ./:/src
       - ./spotipy_cache:/src/lastipy/spotipy_cache
     environment:
@@ -29,7 +30,9 @@ services:
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
       - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@database:5432/prefect
-      # TODO Spotify/LastFM API keys
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - LASTFM_API_KEY=${LASTFM_API_KEY}
     ports:
       - "4200:4200"
 
